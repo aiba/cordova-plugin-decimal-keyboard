@@ -117,7 +117,6 @@ BOOL isAppInBackground=NO;
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
-BOOL isDifferentKeyboardShown=NO;
 
 - (void) keyboardWillAppear: (NSNotification*) n{
     NSLog(@"keyboardWillAppear");
