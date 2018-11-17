@@ -75,7 +75,7 @@ BOOL isAppInBackground=NO;
     
     decimalButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [decimalButton setTitleEdgeInsets:UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f)];
-    [decimalButton setBackgroundColor: [UIColor colorWithRed:210/255.0 green:213/255.0 blue:218/255.0 alpha:0.0]];
+    [decimalButton setBackgroundColor: [UIColor colorWithRed:210/255.0 green:213/255.0 blue:218/255.0 alpha:1.0]];
     
     // locate keyboard view
     UIWindow* tempWindow = nil;
@@ -95,7 +95,6 @@ BOOL isAppInBackground=NO;
             }
         }
     }
-    
     
     UIView* keyboard;
     for(int i=0; i<[tempWindow.subviews count]; i++) {
@@ -181,6 +180,7 @@ BOOL isDifferentKeyboardShown=NO;
 }
 
 - (void)calculateDecimalButtonRect:(UIView *)view {
+    NSLog(@"Current decimalButtonRect=%@", NSStringFromCGRect(decimalButtonRect));
     
     // Get the subviews of the view
     NSArray *subviews = [view subviews];
@@ -189,27 +189,24 @@ BOOL isDifferentKeyboardShown=NO;
     if ([subviews count] == 0) return; // COUNT CHECK LINE
     
     for (UIView *subview in subviews) {
-        if([[subview description] hasPrefix:@"<UIKBKeyplaneView"] == YES){
+        if([[subview description] hasPrefix:@"<UIKBKeyplaneView"] == YES) {
             ui = subview;
-            CGFloat height= 0.0;
-            CGFloat width=0.0;
-            CGFloat x = 0;
-            CGFloat y =ui.frame.size.height;
             for(UIView *nView in ui.subviews) {
-                if([[nView description] hasPrefix:@"<UIKBKeyView"] == YES){
+                if([[nView description] hasPrefix:@"<UIKBKeyView"] == YES) {
                     //all keys of same size;
-                    
-                    height = nView.frame.size.height;
-                    width = nView.frame.size.width-1.5;
-                    y = y-(height-1);
-                    decimalButtonRect = CGRectMake(x, y, width, height);
-                    break;
-                    
+                    NSLog(@"Found existing key view: %@", NSStringFromCGRect(nView.frame));
+                    if (decimalButtonRect.size.width == 0) {
+                        // Initialize by copying button frame
+                        decimalButtonRect = nView.frame;
+                    } else {
+                        decimalButtonRect.origin.x = MIN(decimalButtonRect.origin.x, nView.frame.origin.x);
+                        decimalButtonRect.origin.y = MAX(decimalButtonRect.origin.y, nView.frame.origin.y);
+                        decimalButtonRect.size.height = MAX(decimalButtonRect.size.height, nView.frame.size.height);
+                        decimalButtonRect.size.width = MAX(decimalButtonRect.size.width, nView.frame.size.width);
+                    }
                 }
-                
             }
         }
-        
         [self calculateDecimalButtonRect:subview];
     }
 }
