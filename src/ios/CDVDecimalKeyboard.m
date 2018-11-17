@@ -75,7 +75,7 @@ BOOL isAppInBackground=NO;
     
     decimalButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [decimalButton setTitleEdgeInsets:UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f)];
-    [decimalButton setBackgroundColor: [UIColor colorWithRed:210/255.0 green:213/255.0 blue:218/255.0 alpha:1.0]];
+    [decimalButton setBackgroundColor: [UIColor colorWithRed:0/255.0 green:0/255.0 blue:218/255.0 alpha:1.0]];
     
     // locate keyboard view
     UIWindow* tempWindow = nil;
@@ -99,16 +99,20 @@ BOOL isAppInBackground=NO;
     UIView* keyboard;
     for(int i=0; i<[tempWindow.subviews count]; i++) {
         keyboard = [tempWindow.subviews objectAtIndex:i];
+        decimalButtonRect = CGRectMake(0.0, 0.0, 0.0, 0.0);
         [self calculateDecimalButtonRect:keyboard];
+        NSLog(@"Positioning decimalButton at %@", NSStringFromCGRect(decimalButtonRect));
         decimalButton.frame = decimalButtonRect;
         [ui addSubview:decimalButton];
     }
 }
 - (void) removeDecimalButton{
+    NSLog(@"Removing decimal button");
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
 - (void) deleteDecimalButton{
+    NSLog(@"Deleting decimal button");
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
@@ -180,7 +184,6 @@ BOOL isDifferentKeyboardShown=NO;
 }
 
 - (void)calculateDecimalButtonRect:(UIView *)view {
-    NSLog(@"Current decimalButtonRect=%@", NSStringFromCGRect(decimalButtonRect));
     
     // Get the subviews of the view
     NSArray *subviews = [view subviews];
@@ -194,7 +197,6 @@ BOOL isDifferentKeyboardShown=NO;
             for(UIView *nView in ui.subviews) {
                 if([[nView description] hasPrefix:@"<UIKBKeyView"] == YES) {
                     //all keys of same size;
-                    NSLog(@"Found existing key view: %@", NSStringFromCGRect(nView.frame));
                     if (decimalButtonRect.size.width == 0) {
                         // Initialize by copying button frame
                         decimalButtonRect = nView.frame;
