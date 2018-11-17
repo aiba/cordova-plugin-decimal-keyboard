@@ -31,6 +31,7 @@ BOOL isAppInBackground=NO;
 }
 - (void) appWillResignActive: (NSNotification*) n{
     isAppInBackground = YES;
+    NSLog(@"appWillResignActive");
     [self removeDecimalButton];
 }
 
@@ -42,8 +43,8 @@ BOOL isAppInBackground=NO;
     }
 }
 
-
 - (void) keyboardWillDisappear: (NSNotification*) n{
+    NSLog(@"keyboardWillDisappear");
     [self removeDecimalButton];
 }
 
@@ -119,22 +120,19 @@ BOOL isAppInBackground=NO;
 BOOL isDifferentKeyboardShown=NO;
 
 - (void) keyboardWillAppear: (NSNotification*) n{
+    NSLog(@"keyboardWillAppear");
     NSDictionary* info = [n userInfo];
     NSNumber* value = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     double dValue = [value doubleValue];
     
-    if(dValue <= 0.0){
-        [self removeDecimalButton];
-        return;
+    if (0.0 <= dValue) {
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * dValue);
+        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+            [self processKeyboardShownEvent];
+        });
     }
-    
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * dValue);
-    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
-        [self processKeyboardShownEvent];
-    });
-    
-    
 }
+
 - (void) processKeyboardShownEvent{
     [self isTextAndDecimal:^(BOOL isDecimalKeyRequired) {
         // create custom button
@@ -147,6 +145,7 @@ BOOL isDifferentKeyboardShown=NO;
                 decimalButton.hidden=NO;
                 [self setDecimalChar];
             }else{
+                NSLog(@"isDecimalKeyRequired false");
                 [self removeDecimalButton];
             }
         }
