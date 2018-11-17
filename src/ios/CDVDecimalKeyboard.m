@@ -4,7 +4,7 @@
 
 @implementation CDVDecimalKeyboard
 
-UIView* ui;
+UIView* keyPlane; // view to which we will add button
 CGRect decimalButtonRect;
 UIColor* decimalButtonBGColor;
 UIButton *decimalButton;
@@ -105,7 +105,7 @@ BOOL isAppInBackground=NO;
         [self calculateDecimalButtonRect:keyboard];
         NSLog(@"Positioning decimalButton at %@", NSStringFromCGRect(decimalButtonRect));
         decimalButton.frame = decimalButtonRect;
-        [ui addSubview:decimalButton];
+        [keyPlane addSubview:decimalButton];
     }
 }
 
@@ -176,27 +176,18 @@ BOOL isAppInBackground=NO;
 }
 
 - (void)calculateDecimalButtonRect:(UIView *)view {
-    
-    // Get the subviews of the view
-    NSArray *subviews = [view subviews];
-    
-    // Return if there are no subviews
-    if ([subviews count] == 0) return; // COUNT CHECK LINE
-    
-    for (UIView *subview in subviews) {
+    for (UIView *subview in [view subviews]) {
         if([[subview description] hasPrefix:@"<UIKBKeyplaneView"] == YES) {
-            ui = subview;
-            for(UIView *nView in ui.subviews) {
-                if([[nView description] hasPrefix:@"<UIKBKeyView"] == YES) {
-                    //all keys of same size;
+            keyPlane = subview;
+            for(UIView *v in subview.subviews) {
+                if([[v description] hasPrefix:@"<UIKBKeyView"] == YES) {
                     if (decimalButtonRect.size.width == 0) {
-                        // Initialize by copying button frame
-                        decimalButtonRect = nView.frame;
+                        decimalButtonRect = v.frame;  // Initialize by copying button frame
                     } else {
-                        decimalButtonRect.origin.x = MIN(decimalButtonRect.origin.x, nView.frame.origin.x);
-                        decimalButtonRect.origin.y = MAX(decimalButtonRect.origin.y, nView.frame.origin.y);
-                        decimalButtonRect.size.height = MAX(decimalButtonRect.size.height, nView.frame.size.height);
-                        decimalButtonRect.size.width = MAX(decimalButtonRect.size.width, nView.frame.size.width);
+                        decimalButtonRect.origin.x = MIN(decimalButtonRect.origin.x, v.frame.origin.x);
+                        decimalButtonRect.origin.y = MAX(decimalButtonRect.origin.y, v.frame.origin.y);
+                        decimalButtonRect.size.height = MAX(decimalButtonRect.size.height, v.frame.size.height);
+                        decimalButtonRect.size.width = MAX(decimalButtonRect.size.width, v.frame.size.width);
                     }
                 }
             }
