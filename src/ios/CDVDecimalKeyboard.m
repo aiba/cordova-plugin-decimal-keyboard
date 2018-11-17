@@ -5,10 +5,10 @@
 @implementation CDVDecimalKeyboard
 
 UIView* ui;
-CGRect cgButton;
-BOOL isDecimalKeyRequired=YES;
+CGRect decimalButtonRect;
 UIButton *decimalButton;
 BOOL isAppInBackground=NO;
+
 - (void)pluginInitialize {
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(keyboardWillAppear:)
@@ -75,7 +75,7 @@ BOOL isAppInBackground=NO;
     
     decimalButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [decimalButton setTitleEdgeInsets:UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f)];
-    [decimalButton setBackgroundColor: [UIColor colorWithRed:210/255.0 green:213/255.0 blue:218/255.0 alpha:1.0]];
+    [decimalButton setBackgroundColor: [UIColor colorWithRed:210/255.0 green:213/255.0 blue:218/255.0 alpha:0.0]];
     
     // locate keyboard view
     UIWindow* tempWindow = nil;
@@ -95,26 +95,23 @@ BOOL isAppInBackground=NO;
             }
         }
     }
-
+    
     
     UIView* keyboard;
     for(int i=0; i<[tempWindow.subviews count]; i++) {
         keyboard = [tempWindow.subviews objectAtIndex:i];
-        [self listSubviewsOfView: keyboard];
-        decimalButton.frame = cgButton;
+        [self calculateDecimalButtonRect:keyboard];
+        decimalButton.frame = decimalButtonRect;
         [ui addSubview:decimalButton];
     }
 }
 - (void) removeDecimalButton{
     [decimalButton removeFromSuperview];
     decimalButton=nil;
-    stopSearching=NO;
-    
 }
 - (void) deleteDecimalButton{
     [decimalButton removeFromSuperview];
     decimalButton=nil;
-    stopSearching=NO;
 }
 BOOL isDifferentKeyboardShown=NO;
 
@@ -183,8 +180,7 @@ BOOL isDifferentKeyboardShown=NO;
            }];
 }
 
-BOOL stopSearching=NO;
-- (void)listSubviewsOfView:(UIView *)view {
+- (void)calculateDecimalButtonRect:(UIView *)view {
     
     // Get the subviews of the view
     NSArray *subviews = [view subviews];
@@ -193,24 +189,20 @@ BOOL stopSearching=NO;
     if ([subviews count] == 0) return; // COUNT CHECK LINE
     
     for (UIView *subview in subviews) {
-        if(stopSearching==YES){
-            break;
-        }
         if([[subview description] hasPrefix:@"<UIKBKeyplaneView"] == YES){
             ui = subview;
-            stopSearching = YES;
             CGFloat height= 0.0;
             CGFloat width=0.0;
             CGFloat x = 0;
             CGFloat y =ui.frame.size.height;
-            for(UIView *nView in ui.subviews){
-                
+            for(UIView *nView in ui.subviews) {
                 if([[nView description] hasPrefix:@"<UIKBKeyView"] == YES){
                     //all keys of same size;
+                    
                     height = nView.frame.size.height;
                     width = nView.frame.size.width-1.5;
                     y = y-(height-1);
-                    cgButton = CGRectMake(x, y, width, height);
+                    decimalButtonRect = CGRectMake(x, y, width, height);
                     break;
                     
                 }
@@ -218,13 +210,13 @@ BOOL stopSearching=NO;
             }
         }
         
-        [self listSubviewsOfView:subview];
+        [self calculateDecimalButtonRect:subview];
     }
 }
 
 - (void) evaluateJavaScript:(NSString *)script
           completionHandler:(void (^ _Nullable)(NSString * _Nullable response, NSError * _Nullable error))completionHandler {
-
+    
     if ([self.webView isKindOfClass:UIWebView.class]) {
         UIWebView *webview = (UIWebView*)self.webView;
         NSString *response = [webview stringByEvaluatingJavaScriptFromString:script];
