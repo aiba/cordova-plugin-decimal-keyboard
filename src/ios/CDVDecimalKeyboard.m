@@ -108,11 +108,8 @@ BOOL isAppInBackground=NO;
         [ui addSubview:decimalButton];
     }
 }
+
 - (void) removeDecimalButton{
-    [decimalButton removeFromSuperview];
-    decimalButton=nil;
-}
-- (void) deleteDecimalButton{
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
@@ -230,4 +227,3 @@ BOOL isAppInBackground=NO;
 }
 
 @end
-
