@@ -32,7 +32,6 @@ BOOL isAppInBackground=NO;
 
 - (void) appWillResignActive: (NSNotification*) n{
     isAppInBackground = YES;
-    NSLog(@"appWillResignActive");
     [self removeDecimalButton];
 }
 
@@ -45,7 +44,6 @@ BOOL isAppInBackground=NO;
 }
 
 - (void) keyboardWillDisappear: (NSNotification*) n {
-    NSLog(@"keyboardWillDisappear");
     [self removeDecimalButton];
 }
 
@@ -111,18 +109,15 @@ BOOL isAppInBackground=NO;
     }
 }
 - (void) removeDecimalButton{
-    NSLog(@"Removing decimal button");
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
 - (void) deleteDecimalButton{
-    NSLog(@"Deleting decimal button");
     [decimalButton removeFromSuperview];
     decimalButton=nil;
 }
 
 - (void) keyboardWillAppear: (NSNotification*) n{
-    NSLog(@"keyboardWillAppear");
     NSDictionary* info = [n userInfo];
     NSNumber* value = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     double dValue = [value doubleValue];
@@ -147,7 +142,6 @@ BOOL isAppInBackground=NO;
                 decimalButton.hidden=NO;
                 [self setDecimalChar];
             }else{
-                NSLog(@"isDecimalKeyRequired false");
                 [self removeDecimalButton];
             }
         }
