@@ -39,7 +39,7 @@ BOOL isAppInBackground=NO;
     if(isAppInBackground==YES){
         isAppInBackground = NO;
         [self processKeyboardShownEvent];
-        
+
     }
 }
 
@@ -71,24 +71,24 @@ BOOL isAppInBackground=NO;
             forControlEvents:UIControlEventTouchDown];
     [decimalButton addTarget:self action:@selector(buttonPressCancel:)
             forControlEvents:UIControlEventTouchUpOutside];
-    
+
     decimalButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     [decimalButton setTitleEdgeInsets:UIEdgeInsetsMake(-20.0f, 0.0f, 0.0f, 0.0f)];
     [decimalButton setBackgroundColor:decimalButtonBGColor];
-    
+
     decimalButton.layer.cornerRadius = 10;
     decimalButton.clipsToBounds = YES;
-    
+
     // locate keyboard view
     UIWindow* tempWindow = nil;
     NSArray* openWindows = [[UIApplication sharedApplication] windows];
-    
+
     for(UIWindow* object in openWindows){
         if([[object description] hasPrefix:@"<UIRemoteKeyboardWindow"] == YES){
             tempWindow = object;
         }
     }
-    
+
     if(tempWindow ==nil){
         //for ios 8
         for(UIWindow* object in openWindows){
@@ -97,7 +97,7 @@ BOOL isAppInBackground=NO;
             }
         }
     }
-    
+
     UIView* keyboard;
     for(int i=0; i<[tempWindow.subviews count]; i++) {
         keyboard = [tempWindow.subviews objectAtIndex:i];
@@ -118,7 +118,7 @@ BOOL isAppInBackground=NO;
     NSDictionary* info = [n userInfo];
     NSNumber* value = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     double dValue = [value doubleValue];
-    
+
     if (0.0 <= dValue) {
         dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * dValue);
         dispatch_after(delay, dispatch_get_main_queue(), ^(void){
@@ -161,7 +161,7 @@ BOOL isAppInBackground=NO;
     [self evaluateJavaScript:@"DecimalKeyboard.getActiveElementType();"
            completionHandler:^(NSString * _Nullable response, NSError * _Nullable error) {
                BOOL isText = [response isEqual:@"text"];
-               
+
                if (isText) {
                    [self evaluateJavaScript:@"DecimalKeyboard.isDecimal();"
                           completionHandler:^(NSString * _Nullable response, NSError * _Nullable error) {
@@ -198,13 +198,7 @@ BOOL isAppInBackground=NO;
 
 - (void) evaluateJavaScript:(NSString *)script
           completionHandler:(void (^ _Nullable)(NSString * _Nullable response, NSError * _Nullable error))completionHandler {
-    
-    if ([self.webView isKindOfClass:UIWebView.class]) {
-        UIWebView *webview = (UIWebView*)self.webView;
-        NSString *response = [webview stringByEvaluatingJavaScriptFromString:script];
-        if (completionHandler) completionHandler(response, nil);
-    }
-    
+
     else if ([self.webView isKindOfClass:WKWebView.class]) {
         WKWebView *webview = (WKWebView*)self.webView;
         [webview evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
@@ -214,7 +208,7 @@ BOOL isAppInBackground=NO;
             }
         }];
     }
-    
+
 }
 
 @end
